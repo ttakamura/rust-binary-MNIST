@@ -9,6 +9,18 @@ pub mod network {
   use binary_nn::layer::batch_norm::BatchNormLayer;
   use binary_nn::network::Network;
 
+  fn argmax(vec: Vec<f32>) -> usize {
+    let mut max_idx = 0;
+    let mut max = 0.0;
+    for i in 0..vec.len() {
+      if max < vec[i] {
+        max = vec[i];
+        max_idx = i;
+      }
+    }
+    return max_idx;
+  }
+
   #[derive(Serialize, Deserialize, Debug, PartialEq)]
   pub struct MnistNetwork {
     l1: BinaryLinearLayer,
@@ -50,6 +62,27 @@ pub mod network {
         l3: l3,
         bn3: bn3,
       };
+    }
+
+    pub fn forward(&self, x: &Vec<u8>) -> Vec<f32> {
+      let y1 = self.l1.forward_u8(x);
+      let z1 = self.bn1.forward_sign(&y1);
+      let y2 = self.l2.forward(&z1);
+      let z2 = self.bn2.forward_sign(&y2);
+      let y3 = self.l3.forward(&z2);
+      let z3 = self.bn3.forward_f32(&y3);
+      return z3;
+    }
+
+    // convert float (0 ~ 1.0) to u8 (0 ~ 255)
+    pub fn forward_f32(&self, x: &Vec<f32>) -> Vec<f32> {
+      let y = x.to_owned().into_iter().map(|b| ((b * 255.0).round()) as u8).collect();
+      return self.forward(&y);
+    }
+
+    pub fn predict_f32(&self, x: &Vec<f32>) -> u32 {
+      let z3 = self.forward_f32(x);
+      return argmax(z3) as u32;
     }
   }
 }
