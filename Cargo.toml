@@ -1,0 +1,17 @@
+[package]
+name = "binary_nn_mnist"
+version = "0.1.0"
+authors = ["Tatsuya Takamura"]
+
+[dependencies]
+binary_nn = {git = "https://github.com/ttakamura/binary-nn-rust.git", rev = "ffbfc07"}
+serde_derive = "0.9.11"
+serde = "0.9.11"
+
+[[bin]]
+name = "serialize"
+path = "src/serialize.rs"
+
+[[bin]]
+name = "predict"
+path = "src/predict.rs"
