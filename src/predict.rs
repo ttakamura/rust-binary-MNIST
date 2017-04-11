@@ -11,7 +11,8 @@ fn main() {
   let serialize_path = args[1].clone();
   let data_path = args[2].clone();
 
-  let network = MnistNetwork::deserialize_from(&serialize_path);
+  let serialized_net = loader::load_binary(&serialize_path);
+  let network = MnistNetwork::deserialize(&serialized_net);
   println!("success deserialize network from {}", &serialize_path);
 
   let data = loader::load_f32(&data_path);
